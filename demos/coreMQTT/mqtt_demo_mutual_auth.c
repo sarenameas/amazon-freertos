@@ -95,7 +95,7 @@
 #endif
 
 #ifndef democonfigROOT_CA_PEM
-    #define democonfigROOT_CA_PEM    tlsATS1_ROOT_CERTIFICATE_PEM
+    #define democonfigROOT_CA_PEM    NULL
 #endif
 
 #ifndef democonfigCLIENT_IDENTIFIER
