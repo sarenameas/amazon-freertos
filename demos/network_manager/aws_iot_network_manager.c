@@ -509,6 +509,7 @@ static IotNetworkManager_t networkManager =
 
         if( WIFI_On() != eWiFiSuccess )
         {
+            IotLogError("WIFI_ON() failed.");
             ret = false;
         }
 
@@ -524,6 +525,7 @@ static IotNetworkManager_t networkManager =
 
             if( ( wifiRet != eWiFiSuccess ) && ( wifiRet != eWiFiNotSupported ) )
             {
+                IotLogError("WIFI_RegisterEvent( ) failed.");
                 ret = false;
             }
         }
@@ -947,6 +949,7 @@ uint32_t AwsIotNetworkManager_EnableNetwork( uint32_t networkTypes )
         {
             if( _wifiEnable() == true )
             {
+                IotLogError( "Failed to initialize the WiFi." );
                 enabled |= AWSIOT_NETWORK_TYPE_WIFI;
             }
         }

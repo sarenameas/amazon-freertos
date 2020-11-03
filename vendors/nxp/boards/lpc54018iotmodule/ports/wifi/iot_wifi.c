@@ -344,7 +344,10 @@ WIFIReturnCode_t WIFI_On( void )
     /* Initialize Wi-Fi shield */
     result = (A_STATUS)WIFISHIELD_Init();
     if (A_OK != result)
+    {
+        configPRINTF( ("Failed WIFISHIELD_Init()") );
         return eWiFiFailure;
+    }
 
     /* Power off the WLAN and wait 30ms */
     CUSTOM_HW_POWER_UP_DOWN(NULL, false);
@@ -352,7 +355,10 @@ WIFIReturnCode_t WIFI_On( void )
 
     g_wifi_ctx.PARAM_PTR = &g_wifi_params;
     if (A_OK != ATHEROS_WIFI_IF.INIT(&g_wifi_ctx))
+    {
+        configPRINTF( ("Failed ATHEROS_WIFI_IF.INIT(&g_wifi_ctx)") );
         return eWiFiFailure;
+    }
 
     /* Disable low power mode to avoid SPI bus flood */
     qcom_power_set_mode(0, MAX_PERF_POWER, USER);
@@ -360,18 +366,27 @@ WIFIReturnCode_t WIFI_On( void )
     /* Create a on_connect semaphore, */
     g_wifi_semaph = xSemaphoreCreateBinary();
     if (NULL == g_wifi_semaph)
+    {
+        configPRINTF( ("Failed g_wifi_semaph = xSemaphoreCreateBinary()") );
         return eWiFiFailure;
+    }
     xSemaphoreGive(g_wifi_semaph);
 
     /* Create a on_connect semaphore, */
     g_connect_semaph = xSemaphoreCreateBinary();
     if (NULL == g_connect_semaph)
+    {
+        configPRINTF( ("Failed g_connect_semaph = xSemaphoreCreateBinary()") );
         return eWiFiFailure;
+    }
 
     /* Create a dhcp semaphore, */
     g_dhcp_semaph = xSemaphoreCreateBinary();
     if (NULL == g_dhcp_semaph)
+    {
+        configPRINTF( ("Failed g_dhcp_semaph = xSemaphoreCreateBinary()") );
         return eWiFiFailure;
+    }
 
     /* Wait for Wi-Fi */
     vTaskDelay(MSEC_TO_TICK(100));
