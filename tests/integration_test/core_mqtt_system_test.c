@@ -507,7 +507,7 @@ static MQTTStatus_t unsubscribeFromTopic( MQTTContext_t * pContext,
  * @return MQTTSuccess if successful, error code otherwise. See #MQTT_Publish
  * for possible return codes.
  */
-static MQTTStatus_t publishToTopic( MQTTContext_t * pContext, 
+static MQTTStatus_t publishToTopic( MQTTContext_t * pContext,
                                     MQTTPublishInfo_t * pPublishInfo,
                                     uint16_t packetId )
 
@@ -867,7 +867,7 @@ static MQTTStatus_t unsubscribeFromTopic( MQTTContext_t * pContext,
                              globalUnsubscribePacketIdentifier );
 }
 
-static MQTTStatus_t publishToTopic( MQTTContext_t * pContext, 
+static MQTTStatus_t publishToTopic( MQTTContext_t * pContext,
                                     MQTTPublishInfo_t * pPublishInfo,
                                     uint16_t packetId )
 {
@@ -894,7 +894,7 @@ static void clearRetainedMessage( MQTTContext_t * pContext,
     pubishInfo.retain = true;
     pubishInfo.qos = MQTTQos1;
 
-    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &publishInfo, MQTT_GetPacketId( &context ) );
+    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &context, &publishInfo, MQTT_GetPacketId( &context ) ) );
 
     /* Ensure the broker received the message by waiting for a PUBACK. */
     WAIT_FOR_PACKET( receivedPubAck, MQTTSuccess );
@@ -1145,7 +1145,7 @@ void Subscribe_Publish_With_Qos_0()
     WAIT_FOR_PACKET( receivedSubAck, MQTTSuccess );
 
     /* Publish to the same topic, that we subscribed to, with Qos 0. */
-    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &publishInfo, MQTT_GetPacketId( &context ) );
+    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &context, &publishInfo, MQTT_GetPacketId( &context ) ) );
 
     /* Call the MQTT library for the expectation to read an incoming PUBLISH for
      * the same message that we published (as we have subscribed to the same topic). */
@@ -1205,7 +1205,7 @@ void Subscribe_Publish_With_Qos_1()
 
     /* Publish to the same topic, that we subscribed to, with Qos 1. */
     pubishInfo.qos = MQTTQos1;
-    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &publishInfo, MQTT_GetPacketId( &context ) );
+    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &context, &publishInfo, MQTT_GetPacketId( &context ) ) );
 
     /* Make sure that the MQTT context state was updated after the PUBLISH request. */
     TEST_ASSERT_EQUAL( MQTTQoS1, context.outgoingPublishRecords[ 0 ].qos );
@@ -1270,7 +1270,7 @@ TEST( coreMQTT_Integration, Subscribe_Publish_With_Qos_2 )
 
     /* Publish to the same topic, that we subscribed to, with Qos 2. */
     publishInfo.qos = MQTTQos2;
-    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &publishInfo, MQTT_GetPacketId( &context ) );
+    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &context, &publishInfo, MQTT_GetPacketId( &context ) ) );
 
     /* Make sure that the MQTT context state was updated after the PUBLISH request. */
     TEST_ASSERT_EQUAL( MQTTQoS2, context.outgoingPublishRecords[ 0 ].qos );
@@ -1427,7 +1427,7 @@ TEST( coreMQTT_Integration, Restore_Session_Resend_PubRel )
 
     /* Publish to a topic with Qos 2. */
     pubishInfo.qos = MQTTQos2;
-    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &publishInfo, MQTT_GetPacketId( &context ) );
+    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &context, &publishInfo, MQTT_GetPacketId( &context ) ) );
 
     /* Disconnect on receiving PUBREC so that we are not able to complete the QoS 2 PUBLISH in the current connection. */
     TEST_ASSERT_FALSE( receivedPubComp );
@@ -1472,7 +1472,7 @@ TEST( coreMQTT_Integration, Restore_Session_Incoming_Duplicate_PubRel )
 
     /* Publish to the same topic with Qos 2 (so that the broker can re-publish it back to us). */
     pubishInfo.qos = MQTTQos2;
-    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &publishInfo, MQTT_GetPacketId( &context ) );
+    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &context, &publishInfo, MQTT_GetPacketId( &context ) ) );
 
     /* Disconnect on receiving PUBREL so that we are not able to complete in the incoming QoS2
      * PUBLISH in the current connection. */
@@ -1513,7 +1513,7 @@ void Resend_Unacked_Publish_QoS1()
     /* Initiate the PUBLISH operation at QoS 1. The library should add an
      * outgoing PUBLISH record in the context. */
     pubishInfo.qos = MQTTQos1;
-    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &publishInfo, MQTT_GetPacketId( &context ) );
+    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &context, &publishInfo, MQTT_GetPacketId( &context ) ) );
 
     /* Setup the MQTT connection to terminate to simulate incomplete PUBLISH operation. */
     context.transportInterface.recv = failedRecv;
@@ -1547,7 +1547,7 @@ void Resend_Unacked_Publish_QoS1()
     /* Resend the PUBLISH packet that didn't complete in the previous connection. */
     pubishInfo.dup = true;
     pubishInfo.qos = MQTTQos1;
-    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &publishInfo, MQTT_GetPacketId( &context ) );
+    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &context, &publishInfo, MQTT_GetPacketId( &context ) ) );
 
     /* Complete the QoS 1 PUBLISH resend operation. */
     TEST_ASSERT_FALSE( receivedPubAck );
@@ -1586,7 +1586,7 @@ TEST( coreMQTT_Integration, Resend_Unacked_Publish_QoS2 )
     /* Initiate the PUBLISH operation at QoS 2. The library should add an
      * outgoing PUBLISH record in the context. */
     pubishInfo.qos = MQTTQos2;
-    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &publishInfo, MQTT_GetPacketId( &context ) );
+    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &context, &publishInfo, MQTT_GetPacketId( &context ) ) );
 
     /* Setup the MQTT connection to terminate to simulate incomplete PUBLISH operation. */
     context.transportInterface.recv = failedRecv;
@@ -1619,7 +1619,7 @@ TEST( coreMQTT_Integration, Resend_Unacked_Publish_QoS2 )
     /* Resend the PUBLISH packet that didn't complete in the previous connection. */
     pubishInfo.qos = MQTTQos2;
     pubishInfo.dup = true;
-    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &publishInfo, MQTT_GetPacketId( &context ) );
+    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &context, &publishInfo, MQTT_GetPacketId( &context ) ) );
 
     /* Complete the QoS 2 PUBLISH resend operation. */
     TEST_ASSERT_FALSE( receivedPubRec );
@@ -1654,7 +1654,7 @@ void Restore_Session_Duplicate_Incoming_Publish_Qos1()
 
     /* Publish to the same topic with Qos 1 (so that the broker can re-publish it back to us). */
     pubishInfo.qos = MQTTQos1;
-    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &publishInfo, MQTT_GetPacketId( &context ) );
+    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &context, &publishInfo, MQTT_GetPacketId( &context ) ) );
 
     /* Disconnect on receiving the incoming PUBLISH packet from the broker so that
      * an acknowledgement cannot be sent to the broker. */
@@ -1722,7 +1722,7 @@ TEST( coreMQTT_Integration, Restore_Session_Duplicate_Incoming_Publish_Qos2 )
 
     /* Publish to the same topic with Qos 2 (so that the broker can re-publish it back to us). */
     pubishInfo.qos = MQTTQos2;
-    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &publishInfo, MQTT_GetPacketId( &context ) );
+    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &context, &publishInfo, MQTT_GetPacketId( &context ) ) );
 
     /* Disconnect on receiving the incoming PUBLISH packet from the broker so that
      * an acknowledgement cannot be sent to the broker. */
@@ -1762,7 +1762,7 @@ TEST( coreMQTT_Integration, Publish_With_Retain_Flag )
     /* Publish to a topic with the "retain" flag set. */
     publishInfo.retain = true;
     pubishInfo.qos = MQTTQos1;
-    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &publishInfo, MQTT_GetPacketId( &context ) );
+    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &context, &publishInfo, MQTT_GetPacketId( &context ) ) );
 
     /* Complete the QoS 1 PUBLISH operation. */
     TEST_ASSERT_FALSE( receivedPubAck );
@@ -1790,7 +1790,7 @@ TEST( coreMQTT_Integration, Publish_With_Retain_Flag )
     publishInfo.qos = MQTTQos1;
     publishInfo.pTopic = TEST_MQTT_TOPIC_2;
     publishInfo.topicNameLength = sizeof( TEST_MQTT_TOPIC_2 ) - 1U;
-    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &publishInfo, MQTT_GetPacketId( &context ) );
+    TEST_ASSERT_EQUAL( MQTTSuccess, publishToTopic( &context, &publishInfo, MQTT_GetPacketId( &context ) ) );
 
     /* Complete the QoS 1 PUBLISH operation. */
     TEST_ASSERT_FALSE( receivedPubAck );
