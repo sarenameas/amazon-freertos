@@ -255,13 +255,13 @@
 /**
  * @brief Test initializer for an MQTTPublishInfo_t.
  */
-#define MQTT_PUBLISH_INFO_INITIALIZER                    \
-    { .pTopic = TEST_MQTT_TOPIC,                         \
-      .topicNameLength = sizeof( TEST_MQTT_TOPIC ) - 1U, \
-      .pPayload = MQTT_EXAMPLE_MESSAGE,                  \
-      .payloadLength = sizeof( MQTT_EXAMPLE_MESSAGE ),   \
-      .qos = MQTTQoS0,                                   \
-      .retain = false,                                   \
+#define MQTT_PUBLISH_INFO_INITIALIZER                       \
+    { .pTopic = TEST_MQTT_TOPIC,                            \
+      .topicNameLength = sizeof( TEST_MQTT_TOPIC ) - 1U,    \
+      .pPayload = MQTT_EXAMPLE_MESSAGE,                     \
+      .payloadLength = sizeof( MQTT_EXAMPLE_MESSAGE ) - 1U, \
+      .qos = MQTTQoS0,                                      \
+      .retain = false,                                      \
       .dup = false
 
 /**
@@ -874,7 +874,7 @@ static MQTTStatus_t publishToTopic( MQTTContext_t * pContext,
     assert( pPublishInfo != NULL );
 
     /* Get a new packet id. */
-    globalPublishPacketIdentifier = pPublishInfopacketId;
+    globalPublishPacketIdentifier = packetId;
 
     /* Send PUBLISH packet. */
     return MQTT_Publish( pContext,
