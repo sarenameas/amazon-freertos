@@ -262,7 +262,8 @@
       .payloadLength = sizeof( MQTT_EXAMPLE_MESSAGE ) - 1U, \
       .qos = MQTTQoS0,                                      \
       .retain = false,                                      \
-      .dup = false
+      .dup = false                                          \
+    }
 
 /**
  * @brief Helper function-like macro to test for a specified incoming packet
